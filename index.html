@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Dossier Builder is a portable offline PDF bundling tool with local OCR, review, cover page, and pagination controls."
+    />
+    <title>Dossier Builder</title>
+    <link rel="stylesheet" href="./assets/app.css" />
+    <script src="./libs/pdf.min.js" defer></script>
+    <script src="./libs/pdf-lib.min.js" defer></script>
+    <script src="./libs/tesseract.min.js" defer></script>
+    <script src="./assets/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="eyebrow"><span class="brand-line" aria-hidden="true"></span>Coroner's Office Tooling</div>
+        <div class="title-row">
+          <h1>Dossier Builder</h1>
+          <span class="version-chip">v2.0</span>
+        </div>
+        <p class="subtitle">Portable PDF bundling. No network. Files stay on this machine.</p>
+
+        <div class="metrics" aria-label="Bundle summary">
+          <article class="metric-card">
+            <span>Queued PDFs</span>
+            <strong id="metricDocuments">0</strong>
+          </article>
+          <article class="metric-card">
+            <span>Source pages</span>
+            <strong id="metricPages">0</strong>
+          </article>
+          <article class="metric-card">
+            <span>OCR mode</span>
+            <strong id="metricOcrMode">Auto</strong>
+          </article>
+        </div>
+      </header>
+
+      <section class="status-strip" aria-live="polite">
+        <span class="status-badge" id="statusBadge" data-tone="idle">Idle</span>
+        <p class="status-text" id="statusText">
+          Add PDF files to begin. The app merges locally and uses the bundled English OCR model when requested.
+        </p>
+      </section>
+
+      <nav class="tabs" id="tabList" role="tablist" aria-label="Workflow tabs">
+        <button class="tab is-active" id="tab-build" data-tab="build" role="tab" aria-selected="true" aria-controls="panel-build">
+          Build Bundle
+        </button>
+        <button class="tab" id="tab-review" data-tab="review" role="tab" aria-selected="false" aria-controls="panel-review">
+          Review Bundle
+        </button>
+        <button class="tab" id="tab-cover" data-tab="cover" role="tab" aria-selected="false" aria-controls="panel-cover">
+          Cover Page
+        </button>
+        <button class="tab" id="tab-pagination" data-tab="pagination" role="tab" aria-selected="false" aria-controls="panel-pagination">
+          Pagination
+        </button>
+      </nav>
+
+      <main>
+        <section class="tab-panel" id="panel-build" data-panel="build" role="tabpanel" aria-labelledby="tab-build">
+          <div class="workspace two-up">
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-kicker">Input</p>
+                  <h2>Queue PDFs</h2>
+                  <p class="panel-copy">
+                    Add files, confirm their order, and remove anything that should not be included.
+                  </p>
+                </div>
+              </div>
+
+              <div class="stack">
+                <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-describedby="dropzoneHint">
+                  <h3 style="margin: 0;">Drop PDF files here</h3>
+                  <p class="help-text" id="dropzoneHint">
+                    The app reads only files that are selected directly or dropped onto this window.
+                  </p>
+                </div>
+
+                <div class="button-row">
+                  <label class="button button-primary file-button">
+                    Add PDF files
+                    <input id="fileInput" type="file" accept=".pdf,application/pdf" multiple />
+                  </label>
+                  <button class="button button-secondary" id="clearQueueButton" type="button">Clear queue</button>
+                </div>
+
+                <p class="help-text">Select an item to review it. Use the queue controls to set the final bundle order.</p>
+
+                <ul class="queue-list" id="queueList">
+                  <li class="empty-state">No PDFs queued.</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-kicker">Summary</p>
+                  <h2>Bundle overview</h2>
+                  <p class="panel-copy">The queue summary updates as files are added or removed.</p>
+                </div>
+              </div>
+
+              <div class="summary-grid">
+                <dl class="summary-card">
+                  <dt>Documents</dt>
+                  <dd id="summaryDocuments">0 queued</dd>
+                </dl>
+                <dl class="summary-card">
+                  <dt>Source pages</dt>
+                  <dd id="summaryPages">0 pages</dd>
+                </dl>
+                <dl class="summary-card">
+                  <dt>Cover page</dt>
+                  <dd id="summaryCover">Included at export</dd>
+                </dl>
+                <dl class="summary-card">
+                  <dt>OCR</dt>
+                  <dd id="summaryOcr">Auto-detect scanned pages</dd>
+                </dl>
+              </div>
+
+              <div class="stack" style="margin-top: 16px;">
+                <div class="notice">
+                  Browser-only export is enabled in this build. Merge, OCR, cover generation, and page numbering all stay local.
+                </div>
+                <ul class="check-list">
+                  <li class="help-text">Review PDF order before exporting.</li>
+                  <li class="help-text">Check the Review Bundle tab for page previews and text-layer detection.</li>
+                  <li class="help-text">Use the Cover Page and Pagination tabs to finalize the output.</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-review" data-panel="review" role="tabpanel" aria-labelledby="tab-review" hidden>
+          <div class="workspace">
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-kicker">Review</p>
+                  <h2>Preview source pages</h2>
+                  <p class="panel-copy">
+                    Review one document at a time. The app checks whether the selected page already contains selectable text.
+                  </p>
+                </div>
+              </div>
+
+              <div class="review-layout">
+                <div class="stack">
+                  <ul class="document-list" id="reviewList">
+                    <li class="empty-state">Add PDFs in Build Bundle before opening review.</li>
+                  </ul>
+                </div>
+
+                <div class="stack">
+                  <div class="review-meta-grid">
+                    <dl class="review-meta-card">
+                      <dt>Document</dt>
+                      <dd id="reviewDocName">No document selected</dd>
+                    </dl>
+                    <dl class="review-meta-card">
+                      <dt>Pages</dt>
+                      <dd id="reviewDocPages">0</dd>
+                    </dl>
+                    <dl class="review-meta-card">
+                      <dt>Header check</dt>
+                      <dd id="reviewHeaderStatus">Pending</dd>
+                    </dl>
+                    <dl class="review-meta-card">
+                      <dt>Text layer</dt>
+                      <dd id="reviewTextLayerStatus">Select a page</dd>
+                    </dl>
+                  </div>
+
+                  <div class="preview-shell">
+                    <div class="preview-toolbar">
+                      <div class="button-row">
+                        <button class="button button-secondary" id="reviewPrevPageButton" type="button">← Prev page</button>
+                        <button class="button button-secondary" id="reviewNextPageButton" type="button">Next page →</button>
+                      </div>
+                      <div class="page-indicator" id="reviewPageIndicator">Page 0 of 0</div>
+                    </div>
+
+                    <div class="canvas-wrap" id="reviewCanvasWrap">
+                      <div class="empty-state" id="reviewEmptyState">
+                        Select a document from the list to preview a page.
+                      </div>
+                      <canvas id="reviewCanvas" hidden></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-cover" data-panel="cover" role="tabpanel" aria-labelledby="tab-cover" hidden>
+          <div class="workspace two-up">
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-kicker">Cover</p>
+                  <h2>Draft the first page</h2>
+                  <p class="panel-copy">
+                    The generated cover page is added at export. Edit the fields below to set the output.
+                  </p>
+                </div>
+              </div>
+
+              <div class="field-grid">
+                <div class="field">
+                  <label for="coverTitle">Title</label>
+                  <input id="coverTitle" type="text" value="Case File Bundle" />
+                </div>
+
+                <div class="field">
+                  <label for="coverSubtitle">Subtitle</label>
+                  <input id="coverSubtitle" type="text" value="Prepared for case review" />
+                </div>
+
+                <div class="split-row">
+                  <div class="field">
+                    <label for="coverReference">Reference</label>
+                    <input id="coverReference" type="text" value="REF-001" />
+                  </div>
+                  <div class="field">
+                    <label for="coverPreparedBy">Prepared by</label>
+                    <input id="coverPreparedBy" type="text" value="Coroner's Office" />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="coverNote">Cover note</label>
+                  <textarea id="coverNote">Merged locally. OCR uses the bundled English language file.</textarea>
+                </div>
+
+                <label class="checkbox-row">
+                  <input id="includeCover" type="checkbox" checked />
+                  <span>
+                    <strong>Include generated cover page</strong><br />
+                    <span class="field-hint">Turn this off to export the merged source PDFs without a generated first page.</span>
+                  </span>
+                </label>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-kicker">Preview</p>
+                  <h2>Cover preview</h2>
+                </div>
+              </div>
+
+              <div class="cover-sheet">
+                <div class="eyebrow"><span class="brand-line" aria-hidden="true"></span>Coroner's Office Tooling</div>
+                <h3 id="coverPreviewTitle">Case File Bundle</h3>
+                <p class="cover-subtitle" id="coverPreviewSubtitle">Prepared for case review</p>
+
+                <dl class="cover-meta">
+                  <div>
+                    <dt>Reference</dt>
+                    <dd id="coverPreviewReference">REF-001</dd>
+                  </div>
+                  <div>
+                    <dt>Prepared by</dt>
+                    <dd id="coverPreviewPreparedBy">Coroner's Office</dd>
+                  </div>
+                  <div>
+                    <dt>Documents</dt>
+                    <dd id="coverPreviewDocumentCount">0 queued</dd>
+                  </div>
+                  <div>
+                    <dt>Source pages</dt>
+                    <dd id="coverPreviewPageCount">0 pages</dd>
+                  </div>
+                </dl>
+
+                <p class="cover-note" id="coverPreviewNote">
+                  Merged locally. OCR uses the bundled English language file.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-pagination" data-panel="pagination" role="tabpanel" aria-labelledby="tab-pagination" hidden>
+          <div class="workspace">
+            <div class="pagination-grid">
+              <article class="panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="panel-kicker">Export</p>
+                    <h2>Pagination and OCR</h2>
+                    <p class="panel-copy">Set page labels, choose the OCR mode, and build the merged bundle.</p>
+                  </div>
+                </div>
+
+                <div class="field-grid">
+                  <div class="split-row">
+                    <div class="field">
+                      <label for="pagePrefix">Page prefix</label>
+                      <input id="pagePrefix" type="text" value="B-" />
+                    </div>
+                    <div class="field">
+                      <label for="pageStart">Start number</label>
+                      <input id="pageStart" type="number" min="1" step="1" value="1" />
+                    </div>
+                  </div>
+
+                  <div class="split-row">
+                    <div class="field">
+                      <label for="pagePosition">Page label position</label>
+                      <select id="pagePosition">
+                        <option value="bottom-right">Bottom right</option>
+                        <option value="bottom-center">Bottom center</option>
+                        <option value="bottom-left">Bottom left</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="ocrMode">OCR mode</label>
+                      <select id="ocrMode">
+                        <option value="auto">Auto-detect scanned pages</option>
+                        <option value="all">OCR every source page</option>
+                        <option value="off">Do not run OCR</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <label class="checkbox-row">
+                    <input id="applyPagination" type="checkbox" checked />
+                    <span>
+                      <strong>Apply page labels</strong><br />
+                      <span class="field-hint">Turn this off to merge the PDF without stamped page numbers.</span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-row">
+                    <input id="skipCoverPagination" type="checkbox" checked />
+                    <span>
+                      <strong>Start numbering after the cover page</strong><br />
+                      <span class="field-hint">If the cover page is not included, numbering starts on the first source page.</span>
+                    </span>
+                  </label>
+
+                  <div class="field">
+                    <label for="outputFilename">Output filename</label>
+                    <input id="outputFilename" type="text" value="dossier-bundle.pdf" />
+                  </div>
+
+                  <div class="button-row">
+                    <button class="button button-primary" id="buildBundleButton" type="button">Build merged PDF</button>
+                  </div>
+
+                  <div class="notice">
+                    OCR uses the bundled English model. Large bundles can take time when pages need recognition.
+                  </div>
+                </div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="panel-kicker">Output</p>
+                    <h2>Build result</h2>
+                    <p class="panel-copy">Download the merged PDF or review it directly in the browser after export.</p>
+                  </div>
+                </div>
+
+                <div class="result-shell">
+                  <p class="meta-text" id="exportSummaryText">No merged PDF has been built yet.</p>
+
+                  <div class="result-links">
+                    <a class="button button-primary is-disabled" id="downloadLink" href="#" download="dossier-bundle.pdf" aria-disabled="true">
+                      Download merged PDF
+                    </a>
+                    <a class="button button-secondary is-disabled" id="openLink" href="#" target="_blank" rel="noopener" aria-disabled="true">
+                      Open merged PDF
+                    </a>
+                  </div>
+
+                  <iframe class="result-preview" id="resultPreview" title="Merged PDF preview" hidden></iframe>
+                </div>
+              </article>
+            </div>
+
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-kicker">Status</p>
+                  <h2>Build log</h2>
+                </div>
+              </div>
+
+              <div class="log-shell">
+                <pre class="log-output" id="logOutput">Waiting for the first bundle build.</pre>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
