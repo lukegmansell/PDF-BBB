@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Dossier Builder is a portable offline PDF bundling tool with local OCR, review, cover page, and pagination controls."
+      content="Bundle Builder is a portable offline PDF bundling tool with local OCR, review, cover page, and pagination controls."
     />
-    <title>Dossier Builder</title>
+    <title>Bundle Builder</title>
     <link rel="stylesheet" href="./assets/app.css" />
     <script src="./libs/pdf.min.js" defer></script>
     <script src="./libs/pdf-lib.min.js" defer></script>
@@ -19,8 +19,9 @@
       <header class="app-header">
         <div class="eyebrow"><span class="brand-line" aria-hidden="true"></span>Coroner's Office Tooling</div>
         <div class="title-row">
-          <h1>Dossier Builder</h1>
+          <h1>Bundle Builder</h1>
           <span class="version-chip">v2.0</span>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Switch to light mode</button>
         </div>
         <p class="subtitle">Portable PDF bundling. No network. Files stay on this machine.</p>
 
@@ -346,16 +347,17 @@
                   </label>
 
                   <label class="checkbox-row">
-                    <input id="skipCoverPagination" type="checkbox" checked />
+                    <input id="includeIndexPage" type="checkbox" />
                     <span>
-                      <strong>Start numbering after the cover page</strong><br />
-                      <span class="field-hint">If the cover page is not included, numbering starts on the first source page.</span>
+                      <strong>Add document index page</strong><br />
+                      <span class="field-hint">Adds an index page that lists each queued document and its starting page.</span>
                     </span>
                   </label>
 
+
                   <div class="field">
                     <label for="outputFilename">Output filename</label>
-                    <input id="outputFilename" type="text" value="dossier-bundle.pdf" />
+                    <input id="outputFilename" type="text" value="bundle-builder.pdf" />
                   </div>
 
                   <div class="button-row">
@@ -381,7 +383,7 @@
                   <p class="meta-text" id="exportSummaryText">No merged PDF has been built yet.</p>
 
                   <div class="result-links">
-                    <a class="button button-primary is-disabled" id="downloadLink" href="#" download="dossier-bundle.pdf" aria-disabled="true">
+                    <a class="button button-primary is-disabled" id="downloadLink" href="#" download="bundle-builder.pdf" aria-disabled="true">
                       Download merged PDF
                     </a>
                     <a class="button button-secondary is-disabled" id="openLink" href="#" target="_blank" rel="noopener" aria-disabled="true">
