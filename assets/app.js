@@ -716,7 +716,7 @@
     const existingKeys = new Set(state.documents.map((documentRecord) => documentRecord.key));
     const addedDocuments = [];
     const failures = [];
-    let newQueuedBytes = state.documents.reduce((sum, documentRecord) => sum + documentRecord.size, 0);
+    let currentQueuedBytes = state.documents.reduce((sum, documentRecord) => sum + documentRecord.size, 0);
 
     for (const file of files) {
       const key = `${file.name}-${file.size}-${file.lastModified}`;
@@ -730,7 +730,7 @@
         continue;
       }
 
-      if (newQueuedBytes + file.size > MAX_TOTAL_SIZE_BYTES) {
+      if (currentQueuedBytes + file.size > MAX_TOTAL_SIZE_BYTES) {
         failures.push(`${file.name} would exceed the ${formatBytes(MAX_TOTAL_SIZE_BYTES)} total queue limit.`);
         continue;
       }
@@ -739,7 +739,7 @@
         const documentRecord = await buildDocumentRecord(file);
         addedDocuments.push(documentRecord);
         existingKeys.add(key);
-        newQueuedBytes += file.size;
+        currentQueuedBytes += file.size;
       } catch (error) {
         failures.push(error instanceof Error ? error.message : String(error));
       }
@@ -1350,7 +1350,7 @@
       // Browsers do not await async beforeunload handlers, so terminate the
       // OCR worker as a best-effort fire-and-forget call.
       if (state.ocrWorker && typeof state.ocrWorker.terminate === "function") {
-        state.ocrWorker.terminate().catch(() => {});
+        state.ocrWorker.terminate().catch((error) => console.debug("OCR worker termination failed.", error));
       }
     });
   }
