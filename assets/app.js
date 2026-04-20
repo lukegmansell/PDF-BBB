@@ -892,13 +892,31 @@
     return page;
   }
 
+  const INDEX_PAGE_WIDTH = 612;
+  const INDEX_PAGE_HEIGHT = 792;
+  const INDEX_TITLE_Y_OFFSET = 74;
+  const INDEX_START_Y_OFFSET = 112;
+  const INDEX_ROW_HEIGHT = 22;
+  const INDEX_BOTTOM_MARGIN = 48;
+
+  function getIndexEntriesPerPage() {
+    return Math.floor(
+      ((INDEX_PAGE_HEIGHT - INDEX_START_Y_OFFSET) - INDEX_BOTTOM_MARGIN) / INDEX_ROW_HEIGHT,
+    ) + 1;
+  }
+
+  function getIndexPageCount(entryCount) {
+    const entriesPerPage = getIndexEntriesPerPage();
+    return Math.max(1, Math.ceil(entryCount / entriesPerPage));
+  }
+
   function buildIndexEntries() {
     let nextPage = 1;
     if (state.cover.includeCover) {
       nextPage += 1;
     }
     if (state.pagination.includeIndexPage) {
-      nextPage += 1;
+      nextPage += getIndexPageCount(state.documents.length);
     }
 
     return state.documents.map((documentRecord) => {
@@ -912,44 +930,57 @@
   }
 
   function renderIndexPage(pdfDoc, coverFonts, indexEntries) {
-    const page = pdfDoc.addPage([612, 792]);
-    const { width, height } = page.getSize();
     const { bodyFont, bodyBoldFont } = coverFonts;
+    const pageSize = [INDEX_PAGE_WIDTH, INDEX_PAGE_HEIGHT];
+    const entriesPerPage = getIndexEntriesPerPage();
+    let firstPage = null;
 
-    page.drawText("DOCUMENT INDEX", {
-      x: 48,
-      y: height - 74,
-      size: 18,
-      font: bodyBoldFont,
-      color: window.PDFLib.rgb(0.11, 0.11, 0.1),
-    });
+    for (let startIndex = 0; startIndex < indexEntries.length || startIndex === 0; startIndex += entriesPerPage) {
+      const page = pdfDoc.addPage(pageSize);
+      const { width, height } = page.getSize();
+      let y = height - INDEX_START_Y_OFFSET;
 
-    let y = height - 112;
-    indexEntries.forEach((entry, index) => {
-      const label = `${index + 1}. ${entry.name}`;
-      const pageLabel = `Page ${entry.startPage}`;
+      if (!firstPage) {
+        firstPage = page;
+      }
 
-      page.drawText(label, {
+      page.drawText("DOCUMENT INDEX", {
         x: 48,
-        y,
-        size: 11,
-        font: bodyFont,
-        color: window.PDFLib.rgb(0.11, 0.11, 0.1),
-        maxWidth: width - 170,
-      });
-
-      page.drawText(pageLabel, {
-        x: width - 124,
-        y,
-        size: 11,
+        y: height - INDEX_TITLE_Y_OFFSET,
+        size: 18,
         font: bodyBoldFont,
-        color: window.PDFLib.rgb(0.42, 0.43, 0.45),
+        color: window.PDFLib.rgb(0.11, 0.11, 0.1),
       });
 
-      y -= 22;
-    });
+      indexEntries
+        .slice(startIndex, startIndex + entriesPerPage)
+        .forEach((entry, pageEntryIndex) => {
+          const index = startIndex + pageEntryIndex;
+          const label = `${index + 1}. ${entry.name}`;
+          const pageLabel = `Page ${entry.startPage}`;
 
-    return page;
+          page.drawText(label, {
+            x: 48,
+            y,
+            size: 11,
+            font: bodyFont,
+            color: window.PDFLib.rgb(0.11, 0.11, 0.1),
+            maxWidth: width - 170,
+          });
+
+          page.drawText(pageLabel, {
+            x: width - 124,
+            y,
+            size: 11,
+            font: bodyBoldFont,
+            color: window.PDFLib.rgb(0.42, 0.43, 0.45),
+          });
+
+          y -= INDEX_ROW_HEIGHT;
+        });
+    }
+
+    return firstPage;
   }
 
   async function ensureOcrWorker() {
