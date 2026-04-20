@@ -99,10 +99,12 @@
   };
 
   const ocrRuntime = {
-    workerPath: new URL("./runtime/tesseract/worker.min.js", window.location.href).toString(),
+    workerPath: new URL("./runtime/tesseract/local-worker-bootstrap.js", window.location.href).toString(),
     corePath: new URL("./runtime/tesseract-core/tesseract-core-lstm.wasm.js", window.location.href).toString(),
     langPath: new URL("./runtime/tessdata/", window.location.href).toString(),
-    workerBlobURL: false,
+    // Chromium blocks direct file:// worker scripts from local file pages.
+    // Let Tesseract bootstrap the worker through a blob URL instead.
+    workerBlobURL: true,
   };
 
   if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
