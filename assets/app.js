@@ -27,9 +27,10 @@
       startNumber: 1,
       position: "bottom-right",
       ocrMode: "auto",
-      skipCover: true,
-      outputFilename: "dossier-bundle.pdf",
+      includeIndexPage: false,
+      outputFilename: "bundle-builder.pdf",
     },
+    theme: "dark",
     output: {
       url: "",
       filename: "",
@@ -87,8 +88,9 @@
     pagePosition: document.getElementById("pagePosition"),
     applyPagination: document.getElementById("applyPagination"),
     ocrMode: document.getElementById("ocrMode"),
-    skipCoverPagination: document.getElementById("skipCoverPagination"),
+    includeIndexPage: document.getElementById("includeIndexPage"),
     outputFilename: document.getElementById("outputFilename"),
+    themeToggle: document.getElementById("themeToggle"),
     buildBundleButton: document.getElementById("buildBundleButton"),
     exportSummaryText: document.getElementById("exportSummaryText"),
     downloadLink: document.getElementById("downloadLink"),
@@ -189,7 +191,7 @@
   }
 
   function normalizeFilename(filename) {
-    const trimmed = (filename || "").trim() || "dossier-bundle";
+    const trimmed = (filename || "").trim() || "bundle-builder";
     return trimmed.toLowerCase().endsWith(".pdf") ? trimmed : `${trimmed}.pdf`;
   }
 
@@ -210,8 +212,8 @@
     state.pagination.startNumber = Number.isFinite(parsedStart) && parsedStart > 0 ? parsedStart : 1;
     state.pagination.position = elements.pagePosition.value;
     state.pagination.ocrMode = elements.ocrMode.value;
-    state.pagination.skipCover = elements.skipCoverPagination.checked;
-    state.pagination.outputFilename = elements.outputFilename.value.trim() || "dossier-bundle.pdf";
+    state.pagination.includeIndexPage = elements.includeIndexPage.checked;
+    state.pagination.outputFilename = elements.outputFilename.value.trim() || "bundle-builder.pdf";
   }
 
   function syncFormState() {
@@ -254,6 +256,34 @@
     )} queued`;
     elements.coverPreviewPageCount.textContent = `${formatCount(totalPages, "page", "pages")}`;
     elements.coverPreviewNote.textContent = state.cover.note;
+  }
+
+  function setTheme(theme) {
+    const nextTheme = theme === "light" ? "light" : "dark";
+    state.theme = nextTheme;
+    document.documentElement.dataset.theme = nextTheme;
+    elements.themeToggle.textContent = nextTheme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+    elements.themeToggle.setAttribute("aria-pressed", String(nextTheme === "light"));
+
+    try {
+      window.localStorage.setItem("bundleBuilderTheme", nextTheme);
+    } catch (error) {
+      console.warn("Could not persist theme preference.", error);
+    }
+  }
+
+  function loadThemePreference() {
+    try {
+      const savedTheme = window.localStorage.getItem("bundleBuilderTheme");
+      if (savedTheme === "light" || savedTheme === "dark") {
+        setTheme(savedTheme);
+        return;
+      }
+    } catch (error) {
+      console.warn("Could not read theme preference.", error);
+    }
+
+    setTheme("dark");
   }
 
   function switchTab(nextTab) {
@@ -486,7 +516,7 @@
       : "No merged PDF has been built yet.";
 
     elements.downloadLink.href = hasOutput ? state.output.url : "#";
-    elements.downloadLink.download = state.output.filename || "dossier-bundle.pdf";
+    elements.downloadLink.download = state.output.filename || "bundle-builder.pdf";
     elements.downloadLink.classList.toggle("is-disabled", !hasOutput);
     elements.downloadLink.setAttribute("aria-disabled", hasOutput ? "false" : "true");
 
@@ -862,6 +892,66 @@
     return page;
   }
 
+  function buildIndexEntries() {
+    let nextPage = 1;
+    if (state.cover.includeCover) {
+      nextPage += 1;
+    }
+    if (state.pagination.includeIndexPage) {
+      nextPage += 1;
+    }
+
+    return state.documents.map((documentRecord) => {
+      const entry = {
+        name: documentRecord.name,
+        startPage: nextPage,
+      };
+      nextPage += documentRecord.pageCount;
+      return entry;
+    });
+  }
+
+  function renderIndexPage(pdfDoc, coverFonts, indexEntries) {
+    const page = pdfDoc.addPage([612, 792]);
+    const { width, height } = page.getSize();
+    const { bodyFont, bodyBoldFont } = coverFonts;
+
+    page.drawText("DOCUMENT INDEX", {
+      x: 48,
+      y: height - 74,
+      size: 18,
+      font: bodyBoldFont,
+      color: window.PDFLib.rgb(0.11, 0.11, 0.1),
+    });
+
+    let y = height - 112;
+    indexEntries.forEach((entry, index) => {
+      const label = `${index + 1}. ${entry.name}`;
+      const pageLabel = `Page ${entry.startPage}`;
+
+      page.drawText(label, {
+        x: 48,
+        y,
+        size: 11,
+        font: bodyFont,
+        color: window.PDFLib.rgb(0.11, 0.11, 0.1),
+        maxWidth: width - 170,
+      });
+
+      page.drawText(pageLabel, {
+        x: width - 124,
+        y,
+        size: 11,
+        font: bodyBoldFont,
+        color: window.PDFLib.rgb(0.42, 0.43, 0.45),
+      });
+
+      y -= 22;
+    });
+
+    return page;
+  }
+
   async function ensureOcrWorker() {
     if (state.ocrWorker) {
       return state.ocrWorker;
@@ -970,6 +1060,7 @@
       const titleFont = await mergedPdf.embedFont(StandardFonts.CourierBold);
       const bodyFont = await mergedPdf.embedFont(StandardFonts.Helvetica);
       const bodyBoldFont = await mergedPdf.embedFont(StandardFonts.HelveticaBold);
+      const indexEntries = buildIndexEntries();
 
       let nextPageNumber = state.pagination.startNumber;
       let ocrAppliedPages = 0;
@@ -980,14 +1071,28 @@
         const coverPage = renderCoverPage(mergedPdf, { titleFont, bodyFont, bodyBoldFont });
         addLog("Added generated cover page.");
 
-        if (state.pagination.applyPagination && !state.pagination.skipCover) {
+        if (state.pagination.applyPagination) {
           renderPageNumber(coverPage, nextPageNumber, bodyFont);
           nextPageNumber += 1;
         }
       }
 
-      for (const documentRecord of state.documents) {
+      if (state.pagination.includeIndexPage) {
+        const indexPage = renderIndexPage(mergedPdf, { titleFont, bodyFont, bodyBoldFont }, indexEntries);
+        addLog("Added document index page.");
+
+        if (state.pagination.applyPagination) {
+          renderPageNumber(indexPage, nextPageNumber, bodyFont);
+          nextPageNumber += 1;
+        }
+      }
+
+      for (const [docIndex, documentRecord] of state.documents.entries()) {
         addLog(`Merging ${documentRecord.name}.`);
+        const indexEntry = indexEntries[docIndex];
+        if (indexEntry) {
+          addLog(`Bookmark: ${indexEntry.name} starts on page ${indexEntry.startPage}.`);
+        }
 
         const sourcePdf = await PDFDocument.load(documentRecord.bytes.slice(), {
           ignoreEncryption: true,
@@ -1155,11 +1260,15 @@
       elements.pagePosition,
       elements.applyPagination,
       elements.ocrMode,
-      elements.skipCoverPagination,
+      elements.includeIndexPage,
       elements.outputFilename,
     ].forEach((field) => {
       field.addEventListener("input", updateAfterInputChange);
       field.addEventListener("change", updateAfterInputChange);
+    });
+
+    elements.themeToggle.addEventListener("click", () => {
+      setTheme(state.theme === "dark" ? "light" : "dark");
     });
 
     elements.buildBundleButton.addEventListener("click", () => {
@@ -1188,6 +1297,7 @@
   }
 
   function init() {
+    loadThemePreference();
     updateSummary();
     renderQueueList();
     renderReviewList();

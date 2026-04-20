@@ -1,6 +1,6 @@
-# Dossier Builder
+# Bundle Builder
 
-Dossier Builder is now a portable offline folder app built for Chromium-based browsers in locked-down environments.
+Bundle Builder is now a portable offline folder app built for Chromium-based browsers in locked-down environments.
 
 ## Folder contents
 
