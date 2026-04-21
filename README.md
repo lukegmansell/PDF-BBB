@@ -1,3 +1,7 @@
+## Issues
+OCR not working for v1.2 
+https://github.com/lukegmansell/PDF-BBB/issues/7
+
 # Bundle Builder
 
 Bundle Builder is a browser-based tool for merging multiple PDF files into a single, paginated bundle. It runs entirely in the browser — no server, no installation, and no internet connection required. All processing happens locally on your machine.
