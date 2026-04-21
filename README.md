@@ -1,5 +1,5 @@
 ## Current Issues
-OCR not working for v1.2. Rolled Release back to 1.0.
+OCR not working for v1.2. Release rolled back to 1.0.
 Issue https://github.com/lukegmansell/PDF-BBB/issues/7
 
 # Bundle Builder
