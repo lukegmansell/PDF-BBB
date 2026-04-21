@@ -1023,6 +1023,8 @@
 
   function addInvisibleTextLayer(pdfPage, viewport, ocrData, bodyFont) {
     const textItems = Array.isArray(ocrData.lines) && ocrData.lines.length > 0 ? ocrData.lines : ocrData.words || [];
+    const hasRenderingModeSupport =
+      typeof window.PDFLib.setTextRenderingMode === "function" && typeof pdfPage.pushOperators === "function";
 
     textItems.forEach((item) => {
       const text = String(item.text || "").replace(/\s+/g, " ").trim();
@@ -1047,18 +1049,27 @@
       const height = Math.max(6, Math.abs(yHigh - yLow));
       const fontSize = Math.max(6, height * 0.85);
 
-      // pdf-lib does not expose PDF text rendering modes (e.g. invisible text).
-      // Using near-zero opacity keeps text invisible on-screen while still
-      // making it selectable and searchable in supporting PDF viewers.
+      if (hasRenderingModeSupport) {
+        // Render mode 3 = invisible text. This keeps OCR text searchable
+        // without relying on near-transparent fill opacity, which many
+        // viewers ignore for indexing/search.
+        pdfPage.pushOperators(window.PDFLib.setTextRenderingMode(3));
+      }
+
       pdfPage.drawText(text, {
         x,
         y: yLow + height * 0.08,
         size: fontSize,
         font: bodyFont,
         maxWidth: width,
-        color: window.PDFLib.rgb(1, 1, 1),
-        opacity: 0.001,
+        color: window.PDFLib.rgb(0, 0, 0),
+        opacity: 1,
       });
+
+      if (hasRenderingModeSupport) {
+        // Reset render mode for any later visible text additions.
+        pdfPage.pushOperators(window.PDFLib.setTextRenderingMode(0));
+      }
     });
   }
 
