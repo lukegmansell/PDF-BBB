@@ -913,7 +913,7 @@
       y: margin,
       size: fontSize,
       font: bodyFont,
-      color: window.PDFLib.rgb(0.11, 0.11, 0.1),
+      color: window.PDFLib.rgb(0.13, 0.19, 0.27),
     });
   }
 
@@ -923,13 +923,86 @@
     const { titleFont, bodyFont, bodyBoldFont } = coverFonts;
     const totalPages = getTotalPages();
 
+    const palette = {
+      paper: window.PDFLib.rgb(0.97, 0.95, 0.92),
+      panel: window.PDFLib.rgb(1, 1, 1),
+      deepSlate: window.PDFLib.rgb(0.02, 0.08, 0.15),
+      slate: window.PDFLib.rgb(0.13, 0.19, 0.27),
+      muted: window.PDFLib.rgb(0.34, 0.42, 0.51),
+      line: window.PDFLib.rgb(0.84, 0.8, 0.72),
+      accent: window.PDFLib.rgb(0.91, 0.76, 0.27),
+      lightText: window.PDFLib.rgb(0.83, 0.89, 0.99),
+    };
+
+    page.drawRectangle({
+      x: 0,
+      y: 0,
+      width,
+      height,
+      color: palette.paper,
+    });
+
+    page.drawRectangle({
+      x: 0,
+      y: height - 160,
+      width,
+      height: 160,
+      color: palette.deepSlate,
+    });
+
+    page.drawRectangle({
+      x: 0,
+      y: height - 164,
+      width,
+      height: 4,
+      color: palette.accent,
+    });
+
+    page.drawRectangle({
+      x: 48,
+      y: height - 116,
+      width: 72,
+      height: 72,
+      color: window.PDFLib.rgb(0.04, 0.11, 0.19),
+      borderColor: palette.accent,
+      borderWidth: 1.5,
+    });
+
+    page.drawText("CO", {
+      x: 67,
+      y: height - 90,
+      size: 20,
+      font: bodyBoldFont,
+      color: palette.accent,
+    });
+
+    page.drawText("CORONER'S OFFICE TOOLING", {
+      x: 136,
+      y: height - 80,
+      size: 10,
+      font: bodyBoldFont,
+      color: palette.lightText,
+    });
+
+    page.drawText("PREPARED CASE BUNDLE", {
+      x: 136,
+      y: height - 104,
+      size: 13,
+      font: bodyBoldFont,
+      color: palette.accent,
+    });
+
+    const titleY = height - 234;
+    const subtitleY = state.cover.title ? titleY - 36 : titleY - 8;
+
     if (state.cover.title) {
       page.drawText(state.cover.title, {
         x: 48,
-        y: height - 128,
+        y: titleY,
         size: 28,
         font: titleFont,
-        color: window.PDFLib.rgb(0.11, 0.11, 0.1),
+        color: palette.slate,
+        lineHeight: 32,
         maxWidth: width - 96,
       });
     }
@@ -937,62 +1010,97 @@
     if (state.cover.subtitle) {
       page.drawText(state.cover.subtitle, {
         x: 48,
-        y: height - 158,
+        y: subtitleY,
         size: 14,
         font: bodyFont,
-        color: window.PDFLib.rgb(0.42, 0.43, 0.45),
+        color: palette.muted,
         maxWidth: width - 96,
       });
     }
 
-    const metaRows = [
-      ["Reference", state.cover.reference],
-      ["Prepared by", state.cover.preparedBy],
-      ["Prepared", new Date().toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })],
-      ["Documents", formatCount(state.documents.length, "document", "documents")],
-      ["Source pages", formatCount(totalPages, "page", "pages")],
+    const metaBoxes = [
+      ["Reference", state.cover.reference || "Not set"],
+      ["Prepared by", state.cover.preparedBy || "Not set"],
+      [
+        "Prepared",
+        new Date().toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }),
+      ],
+      [
+        "Bundle contents",
+        `${formatCount(state.documents.length, "document", "documents")} / ${formatCount(
+          totalPages,
+          "page",
+          "pages",
+        )}`,
+      ],
     ];
 
-    let y = height - 232;
-    metaRows.forEach(([label, value]) => {
-      page.drawText(label.toUpperCase(), {
-        x: 48,
+    const metaBoxWidth = 250;
+    const metaBoxHeight = 76;
+    const metaGap = 16;
+    const metaStartY = height - 392;
+
+    metaBoxes.forEach(([label, value], index) => {
+      const column = index % 2;
+      const row = Math.floor(index / 2);
+      const x = 48 + column * (metaBoxWidth + metaGap);
+      const y = metaStartY - row * 92;
+
+      page.drawRectangle({
+        x,
         y,
+        width: metaBoxWidth,
+        height: metaBoxHeight,
+        color: palette.panel,
+        opacity: 0.45,
+        borderColor: palette.line,
+        borderWidth: 1,
+      });
+
+      page.drawText(label.toUpperCase(), {
+        x: x + 14,
+        y: y + 52,
         size: 10,
         font: bodyBoldFont,
-        color: window.PDFLib.rgb(0.43, 0.45, 0.49),
+        color: palette.muted,
       });
 
       page.drawText(value, {
-        x: 48,
-        y: y - 18,
+        x: x + 14,
+        y: y + 26,
         size: 13,
         font: bodyFont,
-        color: window.PDFLib.rgb(0.11, 0.11, 0.1),
-        maxWidth: width - 96,
+        color: palette.slate,
+        maxWidth: metaBoxWidth - 28,
       });
-
-      y -= 58;
     });
 
     if (state.cover.note) {
       page.drawLine({
-        start: { x: 48, y: 182 },
-        end: { x: width - 48, y: 182 },
+        start: { x: 48, y: 172 },
+        end: { x: width - 48, y: 172 },
         thickness: 1,
-        color: window.PDFLib.rgb(0.89, 0.89, 0.86),
+        color: palette.line,
       });
 
       page.drawText(state.cover.note, {
         x: 48,
-        y: 142,
+        y: 130,
         size: 12,
         font: bodyFont,
-        color: window.PDFLib.rgb(0.42, 0.43, 0.45),
+        color: palette.muted,
         lineHeight: 16,
         maxWidth: width - 96,
       });
     }
+
+    page.drawText("Generated locally. Files remain on this workstation.", {
+      x: 48,
+      y: 52,
+      size: 10,
+      font: bodyFont,
+      color: palette.muted,
+    });
 
     return page;
   }
@@ -1241,14 +1349,14 @@
     setBusy(true);
     setStatus("processing", "Preparing merged PDF.");
 
-    const {
-      PDFDocument,
-      StandardFonts,
-    } = window.PDFLib;
+      const {
+        PDFDocument,
+        StandardFonts,
+      } = window.PDFLib;
 
     try {
       const mergedPdf = await PDFDocument.create();
-      const titleFont = await mergedPdf.embedFont(StandardFonts.CourierBold);
+      const titleFont = await mergedPdf.embedFont(StandardFonts.HelveticaBold);
       const bodyFont = await mergedPdf.embedFont(StandardFonts.Helvetica);
       const bodyBoldFont = await mergedPdf.embedFont(StandardFonts.HelveticaBold);
       const indexEntries = buildIndexEntries();

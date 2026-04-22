@@ -16,221 +16,402 @@
   </head>
   <body>
     <div class="app-shell">
-      <header class="app-header">
-        <div class="eyebrow"><span class="brand-line" aria-hidden="true"></span>Coroner's Office Tooling</div>
-        <div class="title-row">
-          <h1>Bundle Builder</h1>
-          <span class="version-chip">v1.4</span>
-          <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Switch to light mode</button>
+      <header class="app-header panel panel-hero">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="eyebrow-row">
+              <div class="eyebrow">
+                <span class="brand-line" aria-hidden="true"></span>
+                Coroner's Office Tooling
+              </div>
+              <span class="hero-chip hero-chip-accent">Offline certified workflow</span>
+            </div>
+
+            <div class="title-row">
+              <div class="title-copy">
+                <p class="header-label">Case Bundle Assembly Desk</p>
+                <h1>Bundle Builder</h1>
+              </div>
+              <button
+                class="theme-toggle"
+                id="themeToggle"
+                type="button"
+                aria-pressed="false"
+              >
+                Switch to light mode
+              </button>
+            </div>
+
+            <p class="subtitle">
+              Assemble evidence bundles, inspect source pages, prepare a cover
+              sheet, and export a paginated PDF without moving any file off this
+              workstation.
+            </p>
+          </div>
+
+          <aside class="hero-seal-panel" aria-label="Official workspace note">
+            <div class="seal-mark" aria-hidden="true">CO</div>
+            <p class="hero-seal-title">Official document assembly surface</p>
+            <p class="hero-seal-copy">
+              A modular dark-mode workspace for long-shift review, OCR, and
+              export control.
+            </p>
+          </aside>
         </div>
-        <p class="subtitle">Portable PDF bundling. No network. Files stay on this machine.</p>
 
         <div class="metrics" aria-label="Bundle summary">
           <article class="metric-card">
-            <span>Queued PDFs</span>
+            <span class="metric-label">Queued PDFs</span>
             <strong id="metricDocuments">0</strong>
+            <span class="metric-detail">Validated source documents</span>
           </article>
           <article class="metric-card">
-            <span>Source pages</span>
+            <span class="metric-label">Source pages</span>
             <strong id="metricPages">0</strong>
+            <span class="metric-detail">Pages staged for export</span>
           </article>
           <article class="metric-card">
-            <span>OCR mode</span>
+            <span class="metric-label">OCR mode</span>
             <strong id="metricOcrMode">Auto</strong>
+            <span class="metric-detail">Recognition policy in force</span>
           </article>
         </div>
       </header>
 
       <section class="status-strip" aria-live="polite">
-        <span class="status-badge" id="statusBadge" data-tone="idle">Idle</span>
+        <div class="status-strip-label">
+          <p class="panel-kicker">System status</p>
+          <span class="status-badge" id="statusBadge" data-tone="idle">Idle</span>
+        </div>
         <p class="status-text" id="statusText">
-          Add PDF files to begin. The app merges locally and uses the bundled English OCR model when requested.
+          Add PDF files to begin. The app merges locally and uses the bundled
+          English OCR model when requested.
         </p>
       </section>
 
       <nav class="tabs" id="tabList" role="tablist" aria-label="Workflow tabs">
-        <button class="tab is-active" id="tab-build" data-tab="build" role="tab" aria-selected="true" aria-controls="panel-build">
-          Build Bundle
+        <button
+          class="tab is-active"
+          id="tab-build"
+          data-tab="build"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-build"
+        >
+          <span class="tab-index">01</span>
+          <span class="tab-copy">
+            <strong>Queue intake</strong>
+            <small>Load, validate, and order source PDFs</small>
+          </span>
         </button>
-        <button class="tab" id="tab-review" data-tab="review" role="tab" aria-selected="false" aria-controls="panel-review">
-          Review Bundle
+        <button
+          class="tab"
+          id="tab-review"
+          data-tab="review"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-review"
+        >
+          <span class="tab-index">02</span>
+          <span class="tab-copy">
+            <strong>Bundle review</strong>
+            <small>Inspect ordering, preview pages, confirm text layers</small>
+          </span>
         </button>
-        <button class="tab" id="tab-cover" data-tab="cover" role="tab" aria-selected="false" aria-controls="panel-cover">
-          Cover Page
+        <button
+          class="tab"
+          id="tab-cover"
+          data-tab="cover"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-cover"
+        >
+          <span class="tab-index">03</span>
+          <span class="tab-copy">
+            <strong>Cover sheet</strong>
+            <small>Prepare the first page and reference details</small>
+          </span>
         </button>
-        <button class="tab" id="tab-pagination" data-tab="pagination" role="tab" aria-selected="false" aria-controls="panel-pagination">
-          Pagination
+        <button
+          class="tab"
+          id="tab-pagination"
+          data-tab="pagination"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-pagination"
+        >
+          <span class="tab-index">04</span>
+          <span class="tab-copy">
+            <strong>Pagination &amp; OCR</strong>
+            <small>Set numbering, build the final merged PDF</small>
+          </span>
         </button>
       </nav>
 
-      <main>
-        <section class="tab-panel" id="panel-build" data-panel="build" role="tabpanel" aria-labelledby="tab-build">
-          <div class="workspace two-up">
-            <article class="panel">
+      <main class="app-main">
+        <section
+          class="tab-panel"
+          id="panel-build"
+          data-panel="build"
+          role="tabpanel"
+          aria-labelledby="tab-build"
+        >
+          <div class="layout-grid">
+            <article class="panel span-8">
               <div class="panel-header">
                 <div>
-                  <p class="panel-kicker">Input</p>
-                  <h2>Queue PDFs</h2>
+                  <p class="panel-kicker">Intake</p>
+                  <h2>Queue source PDFs</h2>
                   <p class="panel-copy">
-                    Add files, confirm their order, and remove anything that should not be included.
+                    Add files, verify the queue, and arrange the bundle order
+                    before export.
                   </p>
                 </div>
               </div>
 
               <div class="stack">
-                <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-describedby="dropzoneHint">
-                  <h3 style="margin: 0;">Drop PDF files here</h3>
+                <div
+                  class="dropzone"
+                  id="dropzone"
+                  tabindex="0"
+                  role="button"
+                  aria-describedby="dropzoneHint"
+                >
+                  <p class="dropzone-label">Secure intake</p>
+                  <h3>Drop PDF files here</h3>
                   <p class="help-text" id="dropzoneHint">
-                    The app reads only files that are selected directly or dropped onto this window.
+                    The app reads only files selected directly or dropped into
+                    this window.
                   </p>
                 </div>
 
                 <div class="button-row">
                   <label class="button button-primary file-button">
                     Add PDF files
-                    <input id="fileInput" type="file" accept=".pdf,application/pdf" multiple />
+                    <input
+                      id="fileInput"
+                      type="file"
+                      accept=".pdf,application/pdf"
+                      multiple
+                    />
                   </label>
-                  <button class="button button-secondary" id="clearQueueButton" type="button">Clear queue</button>
+                  <button
+                    class="button button-secondary"
+                    id="clearQueueButton"
+                    type="button"
+                  >
+                    Clear queue
+                  </button>
                 </div>
 
-                <p class="help-text">Select an item to review it. Use the queue controls to set the final bundle order.</p>
+                <div class="list-shell">
+                  <div class="subsection-header">
+                    <div>
+                      <p class="panel-kicker">Queued records</p>
+                      <p class="panel-copy">
+                        Select a document to review it. Reorder it here or in
+                        the review stage.
+                      </p>
+                    </div>
+                  </div>
 
-                <ul class="queue-list" id="queueList">
-                  <li class="empty-state">No PDFs queued.</li>
-                </ul>
+                  <ul class="queue-list" id="queueList">
+                    <li class="empty-state">No PDFs queued.</li>
+                  </ul>
+                </div>
               </div>
             </article>
 
-            <article class="panel">
-              <div class="panel-header">
-                <div>
-                  <p class="panel-kicker">Summary</p>
-                  <h2>Bundle overview</h2>
-                  <p class="panel-copy">The queue summary updates as files are added or removed.</p>
+            <div class="stack-column span-4">
+              <article class="panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="panel-kicker">Bundle summary</p>
+                    <h2>Operational overview</h2>
+                  </div>
                 </div>
-              </div>
 
-              <div class="summary-grid">
-                <dl class="summary-card">
-                  <dt>Documents</dt>
-                  <dd id="summaryDocuments">0 queued</dd>
-                </dl>
-                <dl class="summary-card">
-                  <dt>Source pages</dt>
-                  <dd id="summaryPages">0 pages</dd>
-                </dl>
-                <dl class="summary-card">
-                  <dt>Cover page</dt>
-                  <dd id="summaryCover">Included at export</dd>
-                </dl>
-                <dl class="summary-card">
-                  <dt>OCR</dt>
-                  <dd id="summaryOcr">Auto-detect scanned pages</dd>
-                </dl>
-              </div>
-
-              <div class="stack" style="margin-top: 16px;">
-                <div class="notice">
-                  Browser-only export is enabled in this build. Merge, OCR, cover generation, and page numbering all stay local.
+                <div class="summary-grid">
+                  <dl class="summary-card">
+                    <dt>Documents</dt>
+                    <dd id="summaryDocuments">0 queued</dd>
+                  </dl>
+                  <dl class="summary-card">
+                    <dt>Source pages</dt>
+                    <dd id="summaryPages">0 pages</dd>
+                  </dl>
+                  <dl class="summary-card">
+                    <dt>Cover page</dt>
+                    <dd id="summaryCover">Included at export</dd>
+                  </dl>
+                  <dl class="summary-card">
+                    <dt>OCR</dt>
+                    <dd id="summaryOcr">Auto-detect scanned pages</dd>
+                  </dl>
                 </div>
-                <ul class="check-list">
-                  <li class="help-text">Review PDF order before exporting.</li>
-                  <li class="help-text">Check the Review Bundle tab for page previews and text-layer detection.</li>
-                  <li class="help-text">Use the Cover Page and Pagination tabs to finalize the output.</li>
-                </ul>
-              </div>
-            </article>
+              </article>
+
+              <article class="panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="panel-kicker">Instructions</p>
+                    <h2>Processing notes</h2>
+                  </div>
+                </div>
+
+                <div class="stack">
+                  <div class="notice">
+                    Browser-only export is enabled in this build. Merge, OCR,
+                    cover generation, and page numbering all remain local.
+                  </div>
+                  <ul class="check-list">
+                    <li class="help-text">
+                      Confirm the queue order before opening export controls.
+                    </li>
+                    <li class="help-text">
+                      Use the review stage to check previews and text-layer
+                      detection.
+                    </li>
+                    <li class="help-text">
+                      Finalize cover-sheet fields and numbering before building
+                      the merged PDF.
+                    </li>
+                  </ul>
+                </div>
+              </article>
+            </div>
           </div>
         </section>
 
-        <section class="tab-panel" id="panel-review" data-panel="review" role="tabpanel" aria-labelledby="tab-review" hidden>
-          <div class="workspace">
-            <article class="panel">
-              <div class="panel-header">
-                <div>
-                  <p class="panel-kicker">Review</p>
-                  <h2>Live bundle review</h2>
+        <section
+          class="tab-panel"
+          id="panel-review"
+          data-panel="review"
+          role="tabpanel"
+          aria-labelledby="tab-review"
+          hidden
+        >
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Review</p>
+                <h2>Bundle inspection desk</h2>
+                <p class="panel-copy">
+                  Keep the order in view, drag records into place, and inspect
+                  the selected page while you work.
+                </p>
+              </div>
+            </div>
+
+            <div class="review-layout">
+              <aside class="review-sidebar">
+                <div class="review-sidebar-header">
+                  <p class="panel-kicker">Bundle order</p>
+                  <h3>Drag to reorder</h3>
                   <p class="panel-copy">
-                    Keep the bundle order in view, drag documents into place, and inspect the selected page as you work.
+                    Click any record to preview it. Drag items to set the final
+                    export order.
                   </p>
                 </div>
-              </div>
 
-              <div class="review-layout">
-                <aside class="review-sidebar">
-                  <div class="review-sidebar-header">
-                    <p class="panel-kicker">Bundle order</p>
-                    <h3>Drag to reorder</h3>
-                    <p class="panel-copy">
-                      The list reflects the current export order. Drag any document to move it, then click to preview it.
-                    </p>
-                  </div>
-
+                <div class="list-shell">
                   <ul class="document-list" id="reviewList">
-                    <li class="empty-state">Add PDFs in Build Bundle before opening review.</li>
+                    <li class="empty-state">
+                      Add PDFs in Queue Intake before opening review.
+                    </li>
                   </ul>
-                </aside>
+                </div>
+              </aside>
 
-                <div class="review-stage">
-                  <div class="review-meta-grid">
-                    <article class="review-meta-card review-meta-card-wide">
-                      <span class="review-meta-label">Document</span>
-                      <strong id="reviewDocName">No document selected</strong>
-                      <p class="review-meta-note" id="reviewHeaderStatus">Header check pending</p>
-                    </article>
-                    <article class="review-meta-card">
-                      <span class="review-meta-label">Bundle order</span>
-                      <strong id="reviewBundlePosition">0 of 0</strong>
-                    </article>
-                    <article class="review-meta-card">
-                      <span class="review-meta-label">Pages</span>
-                      <strong id="reviewDocPages">0</strong>
-                    </article>
-                    <article class="review-meta-card">
-                      <span class="review-meta-label">Text layer</span>
-                      <strong id="reviewTextLayerStatus">Select a page</strong>
-                    </article>
+              <div class="review-stage">
+                <div class="review-meta-grid">
+                  <article class="review-meta-card review-meta-card-wide">
+                    <span class="review-meta-label">Document</span>
+                    <strong id="reviewDocName">No document selected</strong>
+                    <p class="review-meta-note" id="reviewHeaderStatus">
+                      Header check pending
+                    </p>
+                  </article>
+                  <article class="review-meta-card">
+                    <span class="review-meta-label">Bundle order</span>
+                    <strong id="reviewBundlePosition">0 of 0</strong>
+                  </article>
+                  <article class="review-meta-card">
+                    <span class="review-meta-label">Pages</span>
+                    <strong id="reviewDocPages">0</strong>
+                  </article>
+                  <article class="review-meta-card">
+                    <span class="review-meta-label">Text layer</span>
+                    <strong id="reviewTextLayerStatus">Select a page</strong>
+                  </article>
+                </div>
+
+                <div class="preview-shell review-preview-shell">
+                  <div class="preview-toolbar review-preview-toolbar">
+                    <div class="review-preview-copy">
+                      <p class="panel-kicker">Preview</p>
+                      <h3>Selected page</h3>
+                      <p class="panel-copy">
+                        The preview refreshes when you change page, switch
+                        documents, or reorder the bundle.
+                      </p>
+                    </div>
+
+                    <div class="review-toolbar-actions">
+                      <div class="button-row">
+                        <button
+                          class="button button-secondary"
+                          id="reviewPrevPageButton"
+                          type="button"
+                        >
+                          Prev page
+                        </button>
+                        <button
+                          class="button button-secondary"
+                          id="reviewNextPageButton"
+                          type="button"
+                        >
+                          Next page
+                        </button>
+                      </div>
+                      <div class="page-indicator" id="reviewPageIndicator">
+                        Page 0 of 0
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="preview-shell review-preview-shell">
-                    <div class="preview-toolbar review-preview-toolbar">
-                      <div class="review-preview-copy">
-                        <p class="panel-kicker">Preview</p>
-                        <h3>Selected page</h3>
-                        <p class="panel-copy">The preview refreshes as soon as you change page, switch documents, or reorder the bundle.</p>
-                      </div>
-
-                      <div class="review-toolbar-actions">
-                        <div class="button-row">
-                          <button class="button button-secondary" id="reviewPrevPageButton" type="button">Prev page</button>
-                          <button class="button button-secondary" id="reviewNextPageButton" type="button">Next page</button>
-                        </div>
-                        <div class="page-indicator" id="reviewPageIndicator">Page 0 of 0</div>
-                      </div>
+                  <div
+                    class="canvas-wrap review-canvas-stage"
+                    id="reviewCanvasWrap"
+                  >
+                    <div class="empty-state" id="reviewEmptyState">
+                      Select a document from the list to preview a page.
                     </div>
-
-                    <div class="canvas-wrap review-canvas-stage" id="reviewCanvasWrap">
-                      <div class="empty-state" id="reviewEmptyState">
-                        Select a document from the list to preview a page.
-                      </div>
-                      <canvas id="reviewCanvas" hidden></canvas>
-                    </div>
+                    <canvas id="reviewCanvas" hidden></canvas>
                   </div>
                 </div>
               </div>
-            </article>
-          </div>
+            </div>
+          </article>
         </section>
 
-        <section class="tab-panel" id="panel-cover" data-panel="cover" role="tabpanel" aria-labelledby="tab-cover" hidden>
-          <div class="workspace two-up">
-            <article class="panel">
+        <section
+          class="tab-panel"
+          id="panel-cover"
+          data-panel="cover"
+          role="tabpanel"
+          aria-labelledby="tab-cover"
+          hidden
+        >
+          <div class="layout-grid">
+            <article class="panel span-6">
               <div class="panel-header">
                 <div>
-                  <p class="panel-kicker">Cover</p>
+                  <p class="panel-kicker">Cover sheet</p>
                   <h2>Draft the first page</h2>
                   <p class="panel-copy">
-                    The generated cover page is added at export. Edit the fields below to set the output.
+                    The generated cover page is added at export. Update the
+                    fields below to prepare the output.
                   </p>
                 </div>
               </div>
@@ -266,163 +447,237 @@
                   <input id="includeCover" type="checkbox" checked />
                   <span>
                     <strong>Include generated cover page</strong><br />
-                    <span class="field-hint">Turn this off to export the merged source PDFs without a generated first page.</span>
+                    <span class="field-hint">
+                      Turn this off to export the merged source PDFs without a
+                      generated first page.
+                    </span>
                   </span>
                 </label>
               </div>
             </article>
 
-            <article class="panel">
+            <article class="panel span-6">
               <div class="panel-header">
                 <div>
                   <p class="panel-kicker">Preview</p>
                   <h2>Cover preview</h2>
+                  <p class="panel-copy">
+                    A live draft of the title page using the current field
+                    values.
+                  </p>
                 </div>
               </div>
 
               <div class="cover-sheet">
-                <h3 id="coverPreviewTitle"></h3>
-                <p class="cover-subtitle" id="coverPreviewSubtitle"></p>
+                <div class="cover-sheet-header">
+                  <div class="cover-mini-seal" aria-hidden="true">CO</div>
+                  <div>
+                    <p class="cover-sheet-kicker">Prepared case bundle</p>
+                    <p class="cover-sheet-copy">
+                      Generated locally for official review
+                    </p>
+                  </div>
+                </div>
 
-                <dl class="cover-meta">
-                  <div>
-                    <dt>Reference</dt>
-                    <dd id="coverPreviewReference"></dd>
-                  </div>
-                  <div>
-                    <dt>Prepared by</dt>
-                    <dd id="coverPreviewPreparedBy"></dd>
-                  </div>
-                  <div>
-                    <dt>Documents</dt>
-                    <dd id="coverPreviewDocumentCount">0 queued</dd>
-                  </div>
-                  <div>
-                    <dt>Source pages</dt>
-                    <dd id="coverPreviewPageCount">0 pages</dd>
-                  </div>
-                </dl>
+                <div class="cover-sheet-body">
+                  <h3 id="coverPreviewTitle"></h3>
+                  <p class="cover-subtitle" id="coverPreviewSubtitle"></p>
 
-                <p class="cover-note" id="coverPreviewNote" hidden></p>
+                  <dl class="cover-meta">
+                    <div>
+                      <dt>Reference</dt>
+                      <dd id="coverPreviewReference"></dd>
+                    </div>
+                    <div>
+                      <dt>Prepared by</dt>
+                      <dd id="coverPreviewPreparedBy"></dd>
+                    </div>
+                    <div>
+                      <dt>Documents</dt>
+                      <dd id="coverPreviewDocumentCount">0 queued</dd>
+                    </div>
+                    <div>
+                      <dt>Source pages</dt>
+                      <dd id="coverPreviewPageCount">0 pages</dd>
+                    </div>
+                  </dl>
+
+                  <p class="cover-note" id="coverPreviewNote" hidden></p>
+                </div>
               </div>
             </article>
           </div>
         </section>
 
-        <section class="tab-panel" id="panel-pagination" data-panel="pagination" role="tabpanel" aria-labelledby="tab-pagination" hidden>
-          <div class="workspace">
-            <div class="pagination-grid">
-              <article class="panel">
-                <div class="panel-header">
-                  <div>
-                    <p class="panel-kicker">Export</p>
-                    <h2>Pagination and OCR</h2>
-                    <p class="panel-copy">Set page labels, choose the OCR mode, and build the merged bundle.</p>
-                  </div>
-                </div>
-
-                <div class="field-grid">
-                  <div class="split-row">
-                    <div class="field">
-                      <label for="pagePrefix">Page prefix</label>
-                      <input id="pagePrefix" type="text" value="" />
-                    </div>
-                    <div class="field">
-                      <label for="pageStart">Start number</label>
-                      <input id="pageStart" type="number" min="1" step="1" value="1" />
-                    </div>
-                  </div>
-
-                  <div class="split-row">
-                    <div class="field">
-                      <label for="pagePosition">Page label position</label>
-                      <select id="pagePosition">
-                        <option value="bottom-right">Bottom right</option>
-                        <option value="bottom-center">Bottom center</option>
-                        <option value="bottom-left">Bottom left</option>
-                      </select>
-                    </div>
-                    <div class="field">
-                      <label for="ocrMode">OCR mode</label>
-                      <select id="ocrMode">
-                        <option value="auto">Auto-detect scanned pages</option>
-                        <option value="all">OCR every source page</option>
-                        <option value="off">Do not run OCR</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <label class="checkbox-row">
-                    <input id="applyPagination" type="checkbox" checked />
-                    <span>
-                      <strong>Apply page labels</strong><br />
-                      <span class="field-hint">Turn this off to merge the PDF without stamped page numbers.</span>
-                    </span>
-                  </label>
-
-                  <label class="checkbox-row">
-                    <input id="includeIndexPage" type="checkbox" />
-                    <span>
-                      <strong>Add document index page</strong><br />
-                      <span class="field-hint">Adds an index page that lists each queued document and its starting page.</span>
-                    </span>
-                  </label>
-
-
-                  <div class="field">
-                    <label for="outputFilename">Output filename</label>
-                    <input id="outputFilename" type="text" value="bundle-builder.pdf" />
-                  </div>
-
-                  <div class="button-row">
-                    <button class="button button-primary" id="buildBundleButton" type="button">Build merged PDF</button>
-                  </div>
-
-                  <div class="notice">
-                    OCR uses the bundled English model. Large bundles can take time when pages need recognition.
-                  </div>
-                </div>
-              </article>
-
-              <article class="panel">
-                <div class="panel-header">
-                  <div>
-                    <p class="panel-kicker">Output</p>
-                    <h2>Build result</h2>
-                    <p class="panel-copy">Download the merged PDF or review it directly in the browser after export.</p>
-                  </div>
-                </div>
-
-                <div class="result-shell">
-                  <p class="meta-text" id="exportSummaryText">No merged PDF has been built yet.</p>
-
-                  <div class="result-links">
-                    <a class="button button-primary is-disabled" id="downloadLink" href="#" download="bundle-builder.pdf" aria-disabled="true">
-                      Download merged PDF
-                    </a>
-                    <a class="button button-secondary is-disabled" id="openLink" href="#" target="_blank" rel="noopener" aria-disabled="true">
-                      Open merged PDF
-                    </a>
-                  </div>
-
-                  <iframe class="result-preview" id="resultPreview" title="Merged PDF preview" hidden></iframe>
-                </div>
-              </article>
-            </div>
-
-            <article class="panel">
+        <section
+          class="tab-panel"
+          id="panel-pagination"
+          data-panel="pagination"
+          role="tabpanel"
+          aria-labelledby="tab-pagination"
+          hidden
+        >
+          <div class="layout-grid">
+            <article class="panel span-5">
               <div class="panel-header">
                 <div>
-                  <p class="panel-kicker">Status</p>
-                  <h2>Build log</h2>
+                  <p class="panel-kicker">Export controls</p>
+                  <h2>Pagination and OCR</h2>
+                  <p class="panel-copy">
+                    Set page labels, choose recognition mode, and build the
+                    merged bundle.
+                  </p>
                 </div>
               </div>
 
-              <div class="log-shell">
-                <pre class="log-output" id="logOutput">Waiting for the first bundle build.</pre>
+              <div class="field-grid">
+                <div class="split-row">
+                  <div class="field">
+                    <label for="pagePrefix">Page prefix</label>
+                    <input id="pagePrefix" type="text" value="" />
+                  </div>
+                  <div class="field">
+                    <label for="pageStart">Start number</label>
+                    <input
+                      id="pageStart"
+                      type="number"
+                      min="1"
+                      step="1"
+                      value="1"
+                    />
+                  </div>
+                </div>
+
+                <div class="split-row">
+                  <div class="field">
+                    <label for="pagePosition">Page label position</label>
+                    <select id="pagePosition">
+                      <option value="bottom-right">Bottom right</option>
+                      <option value="bottom-center">Bottom center</option>
+                      <option value="bottom-left">Bottom left</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="ocrMode">OCR mode</label>
+                    <select id="ocrMode">
+                      <option value="auto">Auto-detect scanned pages</option>
+                      <option value="all">OCR every source page</option>
+                      <option value="off">Do not run OCR</option>
+                    </select>
+                  </div>
+                </div>
+
+                <label class="checkbox-row">
+                  <input id="applyPagination" type="checkbox" checked />
+                  <span>
+                    <strong>Apply page labels</strong><br />
+                    <span class="field-hint">
+                      Turn this off to merge the PDF without stamped page
+                      numbers.
+                    </span>
+                  </span>
+                </label>
+
+                <label class="checkbox-row">
+                  <input id="includeIndexPage" type="checkbox" />
+                  <span>
+                    <strong>Add document index page</strong><br />
+                    <span class="field-hint">
+                      Adds an index page that lists each queued document and its
+                      starting page.
+                    </span>
+                  </span>
+                </label>
+
+                <div class="field">
+                  <label for="outputFilename">Output filename</label>
+                  <input
+                    id="outputFilename"
+                    type="text"
+                    value="bundle-builder.pdf"
+                  />
+                </div>
+
+                <div class="button-row">
+                  <button
+                    class="button button-primary"
+                    id="buildBundleButton"
+                    type="button"
+                  >
+                    Build merged PDF
+                  </button>
+                </div>
+
+                <div class="notice">
+                  OCR uses the bundled English model. Larger bundles can take
+                  time when recognition is required.
+                </div>
+              </div>
+            </article>
+
+            <article class="panel span-7">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-kicker">Output</p>
+                  <h2>Build result</h2>
+                  <p class="panel-copy">
+                    Download the merged PDF or review it directly in the browser
+                    after export.
+                  </p>
+                </div>
+              </div>
+
+              <div class="result-shell">
+                <p class="meta-text" id="exportSummaryText">
+                  No merged PDF has been built yet.
+                </p>
+
+                <div class="result-links">
+                  <a
+                    class="button button-primary is-disabled"
+                    id="downloadLink"
+                    href="#"
+                    download="bundle-builder.pdf"
+                    aria-disabled="true"
+                  >
+                    Download merged PDF
+                  </a>
+                  <a
+                    class="button button-secondary is-disabled"
+                    id="openLink"
+                    href="#"
+                    target="_blank"
+                    rel="noopener"
+                    aria-disabled="true"
+                  >
+                    Open merged PDF
+                  </a>
+                </div>
+
+                <iframe
+                  class="result-preview"
+                  id="resultPreview"
+                  title="Merged PDF preview"
+                  hidden
+                ></iframe>
               </div>
             </article>
           </div>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Build log</p>
+                <h2>Processing trace</h2>
+              </div>
+            </div>
+
+            <div class="log-shell">
+              <pre class="log-output" id="logOutput">
+Waiting for the first bundle build.</pre
+              >
+            </div>
+          </article>
         </section>
       </main>
     </div>
