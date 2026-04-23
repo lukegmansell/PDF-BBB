@@ -30,7 +30,6 @@
       includeIndexPage: false,
       outputFilename: "bundle-builder.pdf",
     },
-    theme: "dark",
     output: {
       url: "",
       filename: "",
@@ -91,7 +90,7 @@
     ocrMode: document.getElementById("ocrMode"),
     includeIndexPage: document.getElementById("includeIndexPage"),
     outputFilename: document.getElementById("outputFilename"),
-    themeToggle: document.getElementById("themeToggle"),
+    themeToggle: null,
     buildBundleButton: document.getElementById("buildBundleButton"),
     exportSummaryText: document.getElementById("exportSummaryText"),
     downloadLink: document.getElementById("downloadLink"),
@@ -264,34 +263,6 @@
     elements.coverPreviewPageCount.textContent = `${formatCount(totalPages, "page", "pages")}`;
     elements.coverPreviewNote.textContent = state.cover.note;
     elements.coverPreviewNote.hidden = !state.cover.note;
-  }
-
-  function setTheme(theme) {
-    const nextTheme = theme === "light" ? "light" : "dark";
-    state.theme = nextTheme;
-    document.documentElement.dataset.theme = nextTheme;
-    elements.themeToggle.textContent = nextTheme === "dark" ? "Switch to light mode" : "Switch to dark mode";
-    elements.themeToggle.setAttribute("aria-pressed", String(nextTheme === "light"));
-
-    try {
-      window.localStorage.setItem("bundleBuilderTheme", nextTheme);
-    } catch (error) {
-      console.warn("Could not persist theme preference.", error);
-    }
-  }
-
-  function loadThemePreference() {
-    try {
-      const savedTheme = window.localStorage.getItem("bundleBuilderTheme");
-      if (savedTheme === "light" || savedTheme === "dark") {
-        setTheme(savedTheme);
-        return;
-      }
-    } catch (error) {
-      console.warn("Could not read theme preference.", error);
-    }
-
-    setTheme("dark");
   }
 
   function switchTab(nextTab) {
@@ -1608,10 +1579,6 @@
       field.addEventListener("change", updateAfterInputChange);
     });
 
-    elements.themeToggle.addEventListener("click", () => {
-      setTheme(state.theme === "dark" ? "light" : "dark");
-    });
-
     elements.buildBundleButton.addEventListener("click", () => {
       buildBundle();
     });
@@ -1630,7 +1597,6 @@
   }
 
   function init() {
-    loadThemePreference();
     updateSummary();
     renderQueueList();
     renderReviewList();
