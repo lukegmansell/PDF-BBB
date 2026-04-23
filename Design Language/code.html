@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>COTCP Design Guidelines</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#c2c4e6",
+                        "surface": "#15130f",
+                        "secondary-container": "#3f4371",
+                        "on-error-container": "#ffdad6",
+                        "outline-variant": "#4c4639",
+                        "surface-tint": "#e1c380",
+                        "on-secondary": "#282c59",
+                        "on-surface-variant": "#cfc5b5",
+                        "on-tertiary-fixed": "#161a33",
+                        "on-surface": "#e8e1d9",
+                        "tertiary-container": "#9598b8",
+                        "primary-fixed": "#ffdf99",
+                        "on-background": "#e8e1d9",
+                        "on-secondary-fixed-variant": "#3f4371",
+                        "on-error": "#690005",
+                        "primary": "#e1c380",
+                        "inverse-surface": "#e8e1d9",
+                        "on-tertiary-container": "#2d304b",
+                        "on-tertiary": "#2b2e49",
+                        "surface-container-highest": "#38342f",
+                        "secondary-fixed": "#e0e0ff",
+                        "on-secondary-container": "#aeb1e6",
+                        "surface-bright": "#3c3933",
+                        "on-primary-container": "#403000",
+                        "on-primary-fixed-variant": "#58440c",
+                        "surface-variant": "#38342f",
+                        "surface-container-high": "#2d2a24",
+                        "primary-fixed-dim": "#e1c380",
+                        "secondary-fixed-dim": "#bfc2f9",
+                        "secondary": "#bfc2f9",
+                        "primary-container": "#b29758",
+                        "outline": "#989081",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#dfe0ff",
+                        "background": "#15130f",
+                        "on-primary-fixed": "#251a00",
+                        "inverse-on-surface": "#33302b",
+                        "tertiary": "#c2c4e6",
+                        "on-tertiary-fixed-variant": "#424560",
+                        "surface-dim": "#15130f",
+                        "surface-container": "#221f1a",
+                        "on-primary": "#3e2e00",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#725b23",
+                        "surface-container-low": "#1e1b17",
+                        "on-secondary-fixed": "#131643",
+                        "surface-container-lowest": "#100e0a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "base": "8px",
+                        "section-margin": "32px",
+                        "gutter": "20px",
+                        "element-gap": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "stat-value": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-caps": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "stat-value": ["28px", { "lineHeight": "1.1", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
+<!-- TopAppBar -->
+<header class="bg-slate-950 flex justify-between items-center w-full px-8 py-3 docked full-width top-0 border-b border-slate-800 shadow-none shrink-0">
+<div class="flex items-center gap-8">
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-[#b29758] tracking-widest uppercase" style="font-family: 'Plus Jakarta Sans', sans-serif;">Coroner's Office Tooling</span>
+<h1 class="text-xl font-bold text-white tracking-tight" style="font-family: 'Plus Jakarta Sans', sans-serif;">Application Title</h1>
+</div>
+<nav class="hidden md:flex gap-6 items-center h-full pt-1" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+<a class="text-[#b29758] border-b-2 border-[#b29758] pb-1 font-bold px-3 pt-1" href="#">App Guide</a>
+<a class="text-slate-400 font-medium hover:text-white hover:bg-slate-900 transition-colors px-3 py-1 rounded-md" href="#">Tab 2</a>
+<a class="text-slate-400 font-medium hover:text-white hover:bg-slate-900 transition-colors px-3 py-1 rounded-md" href="#">Tab 3</a>
+<a class="text-slate-400 font-medium hover:text-white hover:bg-slate-900 transition-colors px-3 py-1 rounded-md" href="#">Tab 4</a>
+<a class="text-slate-400 font-medium hover:text-white hover:bg-slate-900 transition-colors px-3 py-1 rounded-md" href="#">Tab 5</a>
+</nav>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto p-section-margin bg-background">
+<div class="max-w-6xl mx-auto space-y-section-margin">
+<!-- Page Header -->
+<div class="mb-section-margin border-b border-surface-container-high pb-6">
+<h1 class="font-headline-lg text-headline-lg text-primary-container mb-2">Design Guidelines</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">Comprehensive visual identity rules for the COTCP platform. This document defines the structural and aesthetic tokens required to maintain a consistent, premium enterprise experience.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Section 1: Color Palette (Takes up 8 columns) -->
+<section class="lg:col-span-8 bg-secondary-container rounded-xl p-container-padding flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 border-b border-surface-variant pb-2">Color Palette</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-element-gap flex-1">
+<!-- Deep Navy -->
+<div class="flex flex-col group">
+<div class="h-24 rounded-lg bg-[#191c40] border border-surface-variant mb-3 shadow-inner group-hover:-translate-y-1 transition-transform"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-1">Primary Background</span>
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">Deep Navy</span>
+<span class="font-body-sm text-body-sm text-tertiary-container mt-1 font-mono">#191c40</span>
+</div>
+<!-- Blue-Grey -->
+<div class="flex flex-col group">
+<div class="h-24 rounded-lg bg-[#404472] border border-surface-variant mb-3 shadow-inner group-hover:-translate-y-1 transition-transform"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-1">Component Surfaces</span>
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">Blue-Grey</span>
+<span class="font-body-sm text-body-sm text-tertiary-container mt-1 font-mono">#404472</span>
+</div>
+<!-- Muted Gold -->
+<div class="flex flex-col group">
+<div class="h-24 rounded-lg bg-primary-container border border-surface-variant mb-3 shadow-inner group-hover:-translate-y-1 transition-transform"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-1">Accents &amp; Stats</span>
+<span class="font-body-sm text-body-sm text-primary-container font-semibold">Muted Gold</span>
+<span class="font-body-sm text-body-sm text-tertiary-container mt-1 font-mono">#b29758</span>
+</div>
+<!-- Light Grey -->
+<div class="flex flex-col group">
+<div class="h-24 rounded-lg bg-[#c3c0c0] border border-surface-variant mb-3 shadow-inner group-hover:-translate-y-1 transition-transform"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-1">Typography &amp; Neutral</span>
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">Light Grey</span>
+<span class="font-body-sm text-body-sm text-tertiary-container mt-1 font-mono">#c3c0c0</span>
+</div>
+</div>
+</section>
+<!-- Section 2: Usage Rules (Takes up 4 columns) -->
+<section class="lg:col-span-4 bg-surface-container rounded-xl p-container-padding border border-surface-variant">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 border-b border-surface-variant pb-2">Usage Rules</h2>
+<div class="space-y-6">
+<!-- Dos -->
+<div>
+<h3 class="font-label-caps text-label-caps text-[#4ade80] flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-sm">check_circle</span> DO
+                                </h3>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container mt-1.5 shrink-0"></span>
+                                        Use Muted Gold primarily for high-impact statistics and primary calls to action.
+                                    </li>
+<li class="flex items-start gap-3 font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container mt-1.5 shrink-0"></span>
+                                        Maintain large corner radii (16px/rounded-xl) for all main container cards to soften the dark theme.
+                                    </li>
+</ul>
+</div>
+<!-- Don'ts -->
+<div>
+<h3 class="font-label-caps text-label-caps text-error flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-sm">cancel</span> DON'T
+                                </h3>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-error mt-1.5 shrink-0"></span>
+                                        Avoid solid gold outlines on large containers; use dashed borders only for specific 'drop zones'.
+                                    </li>
+<li class="flex items-start gap-3 font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-error mt-1.5 shrink-0"></span>
+                                        Do not use stark, high-contrast pure white (#FFFFFF) for body text; rely on Light Grey to reduce eye strain.
+                                    </li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Section 3: Typography (Takes up 6 columns) -->
+<section class="lg:col-span-6 bg-secondary-container rounded-xl p-container-padding flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 border-b border-surface-variant pb-2">Typography</h2>
+<div class="space-y-6 flex-1">
+<div class="flex items-center justify-between border-b border-surface-variant pb-4">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">H1 / Plus Jakarta Sans / 32px / Bold</span>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Page Headline</h1>
+</div>
+</div>
+<div class="flex items-center justify-between border-b border-surface-variant pb-4">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">H2 / Plus Jakarta Sans / 24px / Medium</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Section Subtitle</h2>
+</div>
+</div>
+<div class="flex items-center justify-between border-b border-surface-variant pb-4">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">Body Large / Plus Jakarta Sans / 16px / Regular</span>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Standard paragraph text for primary reading experiences.</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">H1 / Plus Jakarta Sans / 32px / Bold</span>
+<span class="font-stat-value text-stat-value text-primary-container">$4.2M</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Component Examples (Takes up 6 columns) -->
+<section class="lg:col-span-6 bg-surface-container rounded-xl p-container-padding border border-surface-variant flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 border-b border-surface-variant pb-2">Component Examples</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-element-gap mb-6">
+<!-- Example Stat Card -->
+<div class="bg-secondary-container rounded-xl p-6 border border-transparent hover:border-primary-container/30 transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Total Revenue</span>
+<span class="material-symbols-outlined text-tertiary-container">trending_up</span>
+</div>
+<div class="font-stat-value text-stat-value text-primary-container mb-2">$12,450,000</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">+14% vs last quarter</div>
+</div>
+<!-- Example Action Card -->
+<div class="bg-secondary-container rounded-xl p-6 border border-dashed border-primary-container/50 flex flex-col items-center justify-center text-center gap-4 bg-[#b29758]/5 hover:bg-[#b29758]/10 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-primary-container text-3xl">upload_file</span>
+<span class="font-body-sm text-body-sm text-primary-container font-medium">Drop new asset here</span>
+</div>
+</div>
+<!-- Example Buttons -->
+<div class="flex items-center gap-4 mt-auto border-t border-surface-variant pt-6">
+<button class="bg-primary-container text-surface px-6 py-3 rounded-lg font-body-sm text-body-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 shadow-lg shadow-primary-container/20">
+                                Primary Action
+                            </button>
+<button class="bg-[#5c5f7c] text-on-surface px-6 py-3 rounded-lg font-body-sm text-body-sm font-medium hover:bg-[#5c5f7c]/80 transition-colors flex items-center gap-2">
+                                Secondary Action
+                            </button>
+<button class="px-6 py-3 rounded-lg font-body-sm text-body-sm font-medium text-tertiary-container hover:text-on-surface hover:bg-surface-variant transition-colors">
+                                Ghost
+                            </button>
+</div>
+</section>
+</div>
+</div>
+</main>
+</div>
+</body></html>
